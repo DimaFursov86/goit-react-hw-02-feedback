@@ -1,0 +1,10 @@
+.buttonBox {
+  display: flex;
+  margin-bottom: 10px;
+}
+.buttons {
+  width: 80px;
+}
+.buttons:not(:last-child) {
+  margin-right: 20px;
+}
