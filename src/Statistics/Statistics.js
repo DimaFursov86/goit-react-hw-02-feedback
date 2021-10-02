@@ -10,6 +10,7 @@ export default function Statistics({
   return (
     <div className={s.box}>
       <div className={s.statsBox}>
+        <h2>Statistic</h2>
         <ul className={s.stats}>
           <li className={s.statsItem}>
             <span className={s.label}>Good</span>

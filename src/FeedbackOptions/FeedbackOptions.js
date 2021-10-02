@@ -1,7 +1,7 @@
 import React from "react";
 import s from "../FeedbackOptions/FeedbackOptions.module.css";
-const FeedbackOptions = ({ options }) => (
-  <div className={s.buttonBox}>
+const FeedbackOptions = ({ options, onLeaveFeedback }) => (
+  <div className={s.buttonBox} onClick={onLeaveFeedback}>
     <button className={s.buttons} type="button" onClick={options[0]}>
       Good
     </button>

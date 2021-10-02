@@ -2,35 +2,38 @@ import React, { Component } from "react";
 import Section from "./Section";
 import Statistics from "./Statistics";
 import FeedbackOptions from "./FeedbackOptions";
+import Notification from "./Notification";
 class App extends Component {
   static defaultProps = {
     initialGood: 0,
     initialNeutral: 0,
     initialBad: 0,
+    initialTotal: 0,
   };
 
   state = {
     good: this.props.initialGood,
     neutral: this.props.initialNeutral,
     bad: this.props.initialBad,
-    total: 0,
+    total: this.props.initialTotal,
     positiveFeedback: 0,
+    visible: false,
   };
   handleIncrementGood = () => {
     this.setState((prevState) => ({
       good: prevState.good + 1,
     }));
-    this.setState({
-      total: this.state.total + 1,
-    });
-    if (this.state.good === 0 && this.state.neutral === 0) {
+    this.setState((prevState) => ({
+      total: prevState.total + 1,
+    }));
+    if (this.state.good === 0) {
       this.setState({
-        positiveFeedback: 100,
+        positiveFeedback: Math.floor((100 / (this.state.total + 1)) * 1),
       });
     } else {
       this.setState({
         positiveFeedback: Math.floor(
-          (100 / this.state.total) * this.state.good
+          (100 / (this.state.total + 1)) * (this.state.good + 1)
         ),
       });
     }
@@ -39,38 +42,47 @@ class App extends Component {
     this.setState((prevState) => ({
       neutral: prevState.neutral + 1,
     }));
-    this.setState({
-      total: this.state.total + 1,
-    });
+    this.setState((prevState) => ({
+      total: prevState.total + 1,
+    }));
+    if (this.state.good === 0) {
+      this.setState({
+        positiveFeedback: 0,
+      });
+    } else {
+      this.setState({
+        positiveFeedback: Math.floor(
+          (100 / (this.state.total + 1)) * this.state.good
+        ),
+      });
+    }
   };
   handleIncrementBad = () => {
     this.setState((prevState) => ({
       bad: prevState.bad + 1,
     }));
-    this.setState({
-      total: this.state.total + 1,
-    });
+    this.setState((prevState) => ({
+      total: prevState.total + 1,
+    }));
+    if (this.state.good === 0) {
+      this.setState({
+        positiveFeedback: 0,
+      });
+    } else {
+      this.setState({
+        positiveFeedback: Math.floor(
+          (100 / (this.state.total + 1)) * this.state.good
+        ),
+      });
+    }
   };
-  handleIPercentage = () => {
-    this.setState({
-      positiveFeedback: (100 / this.state.total) * this.state.good,
-    });
+  show = (e) => {
+    if (e.target.nodeName === "BUTTON") {
+      this.setState({ visible: true });
+    }
   };
-  // deleteTodo = todoId => {
-  //   this.setState(prevState => ({
-  //     todos: prevState.todos.filter(todo => todo.id !== todoId),
-  //   }));
-  // };
 
   render() {
-    // const {good, neutral, bad } = this.state;
-
-    // const totalTodoCount = todos.length;
-    // const completedTodoCount = todos.reduce(
-    //   (total, todo) => (todo.completed ? total + 1 : total),
-    //   0,
-    // );
-
     return (
       <div>
         <Section>
@@ -80,14 +92,19 @@ class App extends Component {
               this.handleIncrementNeutral,
               this.handleIncrementBad,
             ]}
+            onLeaveFeedback={this.show}
           />
-          <Statistics
-            good={this.state.good}
-            neutral={this.state.neutral}
-            bad={this.state.bad}
-            total={this.state.total}
-            positivePercentage={this.state.positiveFeedback}
-          />
+          {this.state.visible ? (
+            <Statistics
+              good={this.state.good}
+              neutral={this.state.neutral}
+              bad={this.state.bad}
+              total={this.state.total}
+              positivePercentage={this.state.positiveFeedback}
+            />
+          ) : (
+            <Notification message={"No feedback given"} />
+          )}
         </Section>
       </div>
     );
