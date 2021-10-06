@@ -8,99 +8,50 @@ class App extends Component {
     initialGood: 0,
     initialNeutral: 0,
     initialBad: 0,
-    initialTotal: 0,
   };
 
   state = {
     good: this.props.initialGood,
     neutral: this.props.initialNeutral,
     bad: this.props.initialBad,
-    total: this.props.initialTotal,
-    positiveFeedback: 0,
-    visible: false,
   };
-  handleIncrementGood = () => {
-    this.setState((prevState) => ({
-      good: prevState.good + 1,
-    }));
-    this.setState((prevState) => ({
-      total: prevState.total + 1,
-    }));
-    if (this.state.good === 0) {
-      this.setState({
-        positiveFeedback: Math.floor((100 / (this.state.total + 1)) * 1),
-      });
-    } else {
-      this.setState({
-        positiveFeedback: Math.floor(
-          (100 / (this.state.total + 1)) * (this.state.good + 1)
-        ),
-      });
-    }
+
+  countTotalFeedback = () => {
+    const total = this.state.good + this.state.neutral + this.state.bad;
+    return total;
   };
-  handleIncrementNeutral = () => {
-    this.setState((prevState) => ({
-      neutral: prevState.neutral + 1,
-    }));
-    this.setState((prevState) => ({
-      total: prevState.total + 1,
-    }));
-    if (this.state.good === 0) {
-      this.setState({
-        positiveFeedback: 0,
-      });
-    } else {
-      this.setState({
-        positiveFeedback: Math.floor(
-          (100 / (this.state.total + 1)) * this.state.good
-        ),
-      });
-    }
+  countPositiveFeedbackPercentage = () => {
+    const percentage = Math.round(
+      (this.state.good / this.countTotalFeedback()) * 100
+    );
+    return percentage;
   };
-  handleIncrementBad = () => {
+  handleIncrement = (e) => {
     this.setState((prevState) => ({
-      bad: prevState.bad + 1,
+      [e]: prevState[e] + 1,
     }));
-    this.setState((prevState) => ({
-      total: prevState.total + 1,
-    }));
-    if (this.state.good === 0) {
-      this.setState({
-        positiveFeedback: 0,
-      });
-    } else {
-      this.setState({
-        positiveFeedback: Math.floor(
-          (100 / (this.state.total + 1)) * this.state.good
-        ),
-      });
-    }
-  };
-  show = (e) => {
-    if (e.target.nodeName === "BUTTON") {
-      this.setState({ visible: true });
-    }
   };
 
   render() {
+    const total = this.countTotalFeedback();
+    const persentage = this.countPositiveFeedbackPercentage();
     return (
       <div>
         <Section>
+          <h1>Please leave feedback</h1>
           <FeedbackOptions
-            options={[
-              this.handleIncrementGood,
-              this.handleIncrementNeutral,
-              this.handleIncrementBad,
-            ]}
-            onLeaveFeedback={this.show}
+            options={Object.keys(this.state)}
+            onLeaveFeedback={this.handleIncrement}
           />
-          {this.state.visible ? (
+        </Section>
+        <Section>
+          {total > 0 ? (
             <Statistics
               good={this.state.good}
               neutral={this.state.neutral}
               bad={this.state.bad}
-              total={this.state.total}
-              positivePercentage={this.state.positiveFeedback}
+              total={total}
+              positivePercentage={persentage}
             />
           ) : (
             <Notification message={"No feedback given"} />
